@@ -23,9 +23,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import codecs
 
+from enum import Enum
 
-class Parser:
-    ColorAttributes = ("CHROME", "PEARLESCENT", "RUBBER", "MATTE_METALLIC", "METAL")
+
+class LDrawColorParser:
+    class ColorAttributes(Enum):
+        CHROME = "CHROME"
+        PEARLESCENT = "PEARLESCENT"
+        RUBBER = "RUBBER"
+        MATTE_METALLIC = "MATTE_METALLIC"
+        METAL = "METAL"
 
     def __init__(self, path):
         self.colors = {}
@@ -33,7 +40,7 @@ class Parser:
         self.color_attributes = {}
 
         self.colors_by_name = {}
-        self.colors_by_code = {}
+        self.colors_by_code: dict[int, Color] = {}
 
         self.load(path)
 
@@ -69,8 +76,8 @@ class Parser:
                 pass
 
             color_attributes = []
-            for attribute in Parser.ColorAttributes:
-                if attribute in pieces:
+            for attribute in LDrawColorParser.ColorAttributes:
+                if attribute.value in pieces:
                     color_attributes.append(attribute)
 
             self.color_attributes[name] = color_attributes
@@ -86,7 +93,12 @@ class Color:
     """a Color, uniquely identified by a code"""
 
     def __init__(
-        self, code=None, name=None, rgb=None, alpha=None, color_attributes=None
+        self,
+        code=None,
+        name: str | None = None,
+        rgb=None,
+        alpha=None,
+        color_attributes=None,
     ):
         self.code = code
         self.name = name
